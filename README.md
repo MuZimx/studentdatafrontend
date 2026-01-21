@@ -14,7 +14,7 @@
 
 ## 项目结构
 ```
-studentdatabackend/
+studentdatafrontend/
 ├── src/
 │   ├── api/              # API接口封装
 │   │   ├── auth.ts      # 认证相关接口
