@@ -1,36 +1,66 @@
 <template>
   <div class="dashboard">
-    <t-layout>
-      <t-layout>
-        <t-header>
-          <div class="header-content">
+    <!-- 顶部导航栏 -->
+    <t-header class="dashboard-header">
+      <div class="header-container">
+        <div class="header-left">
+          <div class="logo">
+            <t-icon name="book" size="24px" style="margin-right: 12px" />
             <h1>学生信息管理系统</h1>
+          </div>
+        </div>
+        <div class="header-right">
+          <t-dropdown :options="userMenuOptions" @click="handleUserMenuClick">
             <div class="user-info">
-              <t-space>
-                <span>欢迎，{{ authStore.userInfo?.username }}</span>
-                <t-tag :theme="authStore.userInfo?.role === 'MANAGER' ? 'danger' : 'success'">
+              <t-avatar size="medium" shape="circle">
+                {{ authStore.userInfo?.username?.charAt(0) }}
+              </t-avatar>
+              <div class="user-details">
+                <div class="user-name">{{ authStore.userInfo?.username }}</div>
+                <t-tag size="small" :theme="authStore.userInfo?.role === 'MANAGER' ? 'danger' : 'success'">
                   {{ authStore.userInfo?.role === 'MANAGER' ? '管理员' : '学生' }}
                 </t-tag>
-                <t-button theme="default" size="small" @click="handleLogout">
-                  退出登录
-                </t-button>
-              </t-space>
+              </div>
+              <t-icon name="chevron-down" size="16px" />
             </div>
-          </div>
-        </t-header>
-        <t-content>
-          <div class="content-wrapper">
-            <t-card title="欢迎使用学生信息管理系统">
-              <p>这是一个基于 Vue 3 + TDesign + TypeScript 的前端项目</p>
-              <p>当前用户信息：</p>
-              <t-descriptions :column="2" bordered>
-                <t-descriptions-item label="学号">{{ authStore.userInfo?.studentId }}</t-descriptions-item>
-                <t-descriptions-item label="用户名">{{ authStore.userInfo?.username }}</t-descriptions-item>
-                <t-descriptions-item label="身份">
-                  {{ authStore.userInfo?.role === 'MANAGER' ? '管理员' : '学生' }}
-                </t-descriptions-item>
-              </t-descriptions>
-            </t-card>
+            <!-- 自定义下拉菜单内容 -->
+            <template #dropdown>
+              <div class="custom-dropdown">
+                <div class="dropdown-item" @click="handleLogout">
+                  <t-icon name="logout" size="16px" />
+                  <span>退出登录</span>
+                </div>
+              </div>
+            </template>
+          </t-dropdown>
+        </div>
+      </div>
+    </t-header>
+
+    <t-layout>
+      <!-- 侧边栏菜单 -->
+      <t-aside width="240px" class="dashboard-aside">
+        <t-menu theme="light" :value="activeMenu" @change="handleMenuChange">
+          <t-menu-item value="dashboard">
+            <template #icon><t-icon name="home" /></template>
+            首页概览
+          </t-menu-item>
+          <t-menu-item value="students">
+            <template #icon><t-icon name="user" /></template>
+            学生管理
+          </t-menu-item>
+          <t-menu-item value="profile">
+            <template #icon><t-icon name="user-circle" /></template>
+            个人中心
+          </t-menu-item>
+        </t-menu>
+      </t-aside>
+
+      <!-- 主内容区 -->
+      <t-layout>
+        <t-content class="dashboard-content">
+          <div class="content-container">
+            <router-view />
           </div>
         </t-content>
       </t-layout>
@@ -39,12 +69,42 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
-import { DialogPlugin, MessagePlugin } from 'tdesign-vue-next'
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { DialogPlugin } from 'tdesign-vue-next'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
+
+const activeMenu = ref('dashboard')
+
+const userMenuOptions = [
+  {  value: 'logout', prefixIcon: 'logout' }
+]
+
+const handleMenuChange = (value: string) => {
+  activeMenu.value = value
+  switch (value) {
+    case 'dashboard':
+      router.push('/dashboard')
+      break
+    case 'students':
+      router.push('/students')
+      break
+    case 'profile':
+      router.push('/profile')
+      break
+  }
+}
+
+
+const handleUserMenuClick = ({ value }: { value: string }) => {
+  if (value === 'logout') {
+    handleLogout()
+  }
+}
 
 const handleLogout = () => {
   const dialog = DialogPlugin.confirm({
@@ -52,43 +112,94 @@ const handleLogout = () => {
     body: '确定要退出登录吗？',
     confirmBtn: '确定',
     cancelBtn: '取消',
+    theme: 'warning',
     onConfirm: () => {
       authStore.logout()
-      MessagePlugin.success('已退出登录')
       router.push('/login')
       dialog.hide()
     }
   })
 }
+
+onMounted(() => {
+  const path = route.path
+  if (path.startsWith('/students')) {
+    activeMenu.value = 'students'
+  } else if (path === '/dashboard' || path === '/') {
+    activeMenu.value = 'dashboard'
+  } else if (path === '/profile') {
+    activeMenu.value = 'profile'
+  }
+})
 </script>
 
 <style scoped>
 .dashboard {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  overflow: hidden;
 }
 
-.header-content {
+.dashboard-header {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: 64px;
+}
+
+.header-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 24px;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  height: 100%;
 }
 
-.header-content h1 {
+.header-left .logo {
+  display: flex;
+  align-items: center;
+}
+
+.header-left h1 {
+  margin: 0;
   font-size: 20px;
-  color: #333;
+  font-weight: 600;
+  color: var(--td-brand-color);
 }
 
 .user-info {
-  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  cursor: pointer;
 }
 
-.content-wrapper {
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.dashboard-aside {
+  background: #fff;
+  border-right: 1px solid var(--td-component-border);
+  height: calc(100vh - 64px);
+}
+
+.dashboard-content {
+  background: #f5f7fa;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+
+.content-container {
   padding: 24px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 </style>

@@ -2,19 +2,21 @@ import request from './request'
 import type { RegisterData, LoginData, ApiResult, User, LoginResponse } from '@/types'
 
 export const authApi = {
-  register(data: RegisterData): Promise<ApiResult<User>> {
-    return request({
+  async register(data: RegisterData): Promise<ApiResult<User>> {
+    const response = await request({
       url: '/auth/register',
       method: 'post',
       data
     })
+    return response.data
   },
 
-  login(data: LoginData): Promise<ApiResult<LoginResponse>> {
-    return request({
+  async login(data: LoginData): Promise<ApiResult<LoginResponse>> {
+    const response = await request({
       url: '/auth/login',
       method: 'post',
       data
     })
+    return response.data
   }
 }
