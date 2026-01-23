@@ -133,13 +133,16 @@ const localFormData = reactive<StudentFormData>({
 watch(
     () => props.formData,
     (newFormData) => {
-      Object.assign(localFormData, newFormData)
+      // 只在 formData 确实变化时才更新（避免不必要的重置）
+      if (newFormData && newFormData.studentId !== localFormData.studentId) {
+        Object.assign(localFormData, newFormData)
+      }
       // 确保courses存在且是数组
       if (!localFormData.courses || !Array.isArray(localFormData.courses)) {
         localFormData.courses = []
       }
     },
-    { immediate: true, deep: true }
+    { immediate: true }
 )
 
 // 添加课程成绩验证规则

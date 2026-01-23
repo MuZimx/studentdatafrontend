@@ -206,11 +206,15 @@ const filteredStudents = computed(() => {
   }
 
   const keyword = searchKeyword.value.toLowerCase()
-  return students.value.filter(student =>
+  const filtered = students.value.filter(student =>
       student.studentId.toLowerCase().includes(keyword) ||
       student.name.toLowerCase().includes(keyword) ||
       student.major.toLowerCase().includes(keyword)
   )
+  console.log('搜索关键词:', searchKeyword.value)
+  console.log('搜索结果数量:', filtered.length)
+  console.log('搜索结果:', filtered.map(s => ({ id: s.studentId, name: s.name })))
+  return filtered
 })
 
 // 获取课程弹窗内容
@@ -230,9 +234,13 @@ const loadStudents = async () => {
   try {
     const res = await studentApi.getAllStudents()
 
+    console.log('获取学生列表响应:', res)
+    console.log('学生数据:', res.data)
+
     if (res.code === 200) {
       if (res.data && Array.isArray(res.data)) {
         students.value = res.data
+        console.log('加载的学生列表:', students.value.map(s => ({ id: s.studentId, name: s.name })))
         MessagePlugin.success(`成功加载 ${res.data.length} 名学生`)
       } else {
         students.value = []
@@ -243,6 +251,7 @@ const loadStudents = async () => {
       students.value = []
     }
   } catch (error: any) {
+    console.error('加载学生列表失败:', error)
     students.value = []
   } finally {
     loading.value.table = false

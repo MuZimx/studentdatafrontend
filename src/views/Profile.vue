@@ -291,7 +291,7 @@ const getScoreColor = (score: number) => {
 
 // 获取学生信息
 const fetchStudentInfo = async () => {
-  if (!authStore.userInfo?.studentId || authStore.userInfo?.role !== 'USER') {
+  if (!authStore.userInfo?.studentId) {
     studentData.value = null
     return
   }
@@ -351,7 +351,7 @@ const handleLogout = async () => {
 
 // 页面加载时获取学生信息
 onMounted(() => {
-  if (authStore.userInfo?.studentId && authStore.userInfo?.role === 'USER') {
+  if (authStore.userInfo?.studentId) {
     fetchStudentInfo()
   }
 })
