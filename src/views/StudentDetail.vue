@@ -483,175 +483,48 @@ onMounted(() => {
 
 <style scoped>
 .student-detail {
-  padding: 20px;
-  background: #f5f7fa;
-  min-height: 100vh;
+  padding: 24px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+  min-height: calc(100vh - 70px);
 }
 
-.breadcrumb {
-  margin-bottom: 20px;
-}
-
-.detail-container {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.info-card,
-.courses-card,
-.no-courses-card {
+.info-card, .courses-card, .no-courses-card {
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+  border: none;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 16px;
-  border-bottom: 2px solid var(--td-component-stroke);
-}
-
-.card-title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--td-text-color-primary);
-  display: flex;
-  align-items: center;
-}
-
-.statistics {
-  display: flex;
-  align-items: center;
-}
-
-.detail-content {
-  padding: 16px 0;
-}
-
-.info-item {
-  padding: 16px;
-  background: var(--td-bg-color-container);
-  border-radius: 8px;
-  border: 1px solid var(--td-component-border);
-  transition: all 0.3s ease;
-}
-
-.info-item:hover {
-  border-color: var(--td-brand-color);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-
-.info-label {
-  font-size: 14px;
-  color: var(--td-text-color-secondary);
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-}
-
-.info-value {
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--td-text-color-primary);
-}
-
-.empty-state {
-  padding: 60px 20px;
-}
-
-.courses-content {
-  padding: 16px 0;
+.info-card:hover, .courses-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
 }
 
 .course-card {
   height: 100%;
   transition: all 0.3s ease;
+  border-radius: 10px;
+  border: 1px solid var(--td-component-border);
 }
 
 .course-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-}
-
-.course-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
-.course-title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--td-text-color-primary);
-}
-
-.course-info {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.course-level {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-top: 8px;
-  border-top: 1px solid var(--td-component-stroke);
-}
-
-.level-text {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--td-text-color-primary);
-}
-
-.analysis-section {
-  margin-top: 32px;
-  padding-top: 24px;
-  border-top: 2px solid var(--td-component-stroke);
-}
-
-.analysis-title {
-  margin: 0 0 20px 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--td-text-color-primary);
+  border-color: var(--td-brand-color);
 }
 
 .analysis-card {
-  height: 100%;
   text-align: center;
-}
-
-.analysis-item {
   padding: 20px;
-}
-
-.analysis-label {
-  font-size: 14px;
-  color: var(--td-text-color-secondary);
-  margin-bottom: 8px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 10px;
+  border: none;
 }
 
 .analysis-value {
   font-size: 28px;
   font-weight: 700;
-  color: var(--td-text-color-primary);
-  margin-bottom: 8px;
-}
-
-.analysis-desc {
-  font-size: 12px;
-  color: var(--td-text-color-placeholder);
-}
-
-.no-courses-card {
-  text-align: center;
+  color: var(--td-brand-color);
 }
 </style>

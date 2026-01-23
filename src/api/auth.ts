@@ -18,5 +18,13 @@ export const authApi = {
       data
     })
     return response.data
+  },
+
+  async logout(): Promise<ApiResult<void>> {
+    const response = await request({
+      url: '/auth/logout',
+      method: 'post'
+    })
+    return response.data
   }
 }
