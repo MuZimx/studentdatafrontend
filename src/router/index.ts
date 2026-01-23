@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import {useAuthStore} from "@/stores/auth.ts";
 
 const routes: RouteRecordRaw[] = [
   {
@@ -62,26 +63,26 @@ const router = createRouter({
 export default router
 
 
-// // 路由守卫
-// router.beforeEach((to, _from, next) => {
-//   // 设置页面标题
-//   if (to.meta.title) {
-//     document.title = to.meta.title as string
-//   }
-//
-//   // 开发环境跳过认证
-//   if (import.meta.env.DEV) {
-//     next()
-//     return
-//   }
-//
-//   const authStore = useAuthStore()
-//
-//   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-//     next('/login')
-//   } else if ((to.path === '/login' || to.path === '/register') && authStore.isAuthenticated) {
-//     next('/dashboard')
-//   } else {
-//     next()
-//   }
-// })
+// 路由守卫
+router.beforeEach((to, _from, next) => {
+  // 设置页面标题
+  if (to.meta.title) {
+    document.title = to.meta.title as string
+  }
+
+  // 开发环境跳过认证
+  // if (import.meta.env.DEV) {
+  //   next()
+  //   return
+  // }
+
+  const authStore = useAuthStore()
+
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    next('/login')
+  } else if ((to.path === '/login' || to.path === '/register') && authStore.isAuthenticated) {
+    next('/dashboard')
+  } else {
+    next()
+  }
+})
