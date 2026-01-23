@@ -286,9 +286,9 @@ const handleEdit = (student: Student) => {
   showDialog.value = true
 }
 
-// 删除学生
+
 const handleDelete = (studentId: string, studentName: string) => {
-  DialogPlugin.confirm({
+  const dialog = DialogPlugin.confirm({
     header: '确认删除',
     body: `确定要删除学生 "${studentName}" 吗？`,
     confirmBtn: '确定删除',
@@ -299,11 +299,9 @@ const handleDelete = (studentId: string, studentName: string) => {
       try {
         const res = await studentApi.deleteStudent(studentId)
 
-        console.log('删除响应:', res)
-
         if (res.code === 200) {
           MessagePlugin.success('删除成功')
-          await loadStudents() // 重新加载列表
+          await loadStudents()
         } else {
           MessagePlugin.error(res.message || '删除失败')
         }
@@ -312,6 +310,7 @@ const handleDelete = (studentId: string, studentName: string) => {
         MessagePlugin.error(error.message || '删除失败')
       } finally {
         loading.value.delete = null
+        dialog.hide()
       }
     }
   })

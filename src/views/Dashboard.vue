@@ -73,6 +73,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { DialogPlugin } from 'tdesign-vue-next'
 import { useAuthStore } from '@/stores/auth'
+import { authApi } from "@/api/auth.ts";
 
 const router = useRouter()
 const route = useRoute()
@@ -113,10 +114,20 @@ const handleLogout = () => {
     confirmBtn: '确定',
     cancelBtn: '取消',
     theme: 'warning',
-    onConfirm: () => {
-      authStore.logout()
-      router.push('/login')
-      dialog.hide()
+    onConfirm: async () => {
+      try {
+        // 调用后端退出接口
+        await authApi.logout()
+      } catch (error) {
+        console.error('退出登录失败:', error)
+        // 即使后端退出失败，也要清理前端状态
+      } finally {
+        // 清理前端认证状态
+        authStore.logout()
+        // 跳转到登录页
+        router.push('/login')
+        dialog.hide()
+      }
     }
   })
 }

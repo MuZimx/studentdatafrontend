@@ -1,144 +1,118 @@
+<!-- StudentDetail.vue 修改后的完整代码 -->
 <template>
   <div class="student-detail">
     <!-- 面包屑导航 -->
-    <t-breadcrumb class="breadcrumb" :max-item-width="150">
-      <t-breadcrumbItem to="/dashboard">首页</t-breadcrumbItem>
-      <t-breadcrumbItem to="/students">学生管理</t-breadcrumbItem>
-      <t-breadcrumbItem>学生详情</t-breadcrumbItem>
-    </t-breadcrumb>
+    <div class="breadcrumb-container">
+      <t-breadcrumb class="breadcrumb" :max-item-width="150">
+        <t-breadcrumb-item to="/dashboard">首页</t-breadcrumb-item>
+        <t-breadcrumb-item to="/students">学生管理</t-breadcrumb-item>
+        <t-breadcrumb-item>学生详情</t-breadcrumb-item>
+      </t-breadcrumb>
+    </div>
 
     <!-- 主内容 -->
     <div class="detail-container">
+      <!-- 操作工具栏 -->
+      <div class="action-toolbar">
+        <t-space>
+          <t-button variant="text" @click="$router.push('/students')">
+            <template #icon><t-icon name="arrow-left" /></template>
+            返回列表
+          </t-button>
+          <t-button
+              v-if="authStore.userInfo?.role === 'MANAGER'"
+              theme="warning"
+              @click="handleEdit"
+          >
+            <template #icon><t-icon name="edit" /></template>
+            编辑信息
+          </t-button>
+          <t-button
+              v-if="authStore.userInfo?.role === 'MANAGER'"
+              theme="danger"
+              variant="outline"
+              @click="handleDelete"
+          >
+            <template #icon><t-icon name="delete" /></template>
+            删除学生
+          </t-button>
+        </t-space>
+      </div>
+
       <!-- 基本信息卡片 -->
-      <t-card :bordered="false" class="info-card">
+      <t-card class="info-card">
         <template #header>
           <div class="card-header">
-            <h2 class="card-title">
-              <t-icon name="user" style="margin-right: 8px" />
-              学生基本信息
-            </h2>
-            <t-space>
-              <t-button
-                  variant="text"
-                  @click="$router.push('/students')"
-              >
-                <template #icon><t-icon name="arrow-left" /></template>
-                返回列表
-              </t-button>
-              <t-button
-                  v-if="authStore.userInfo?.role === 'MANAGER'"
-                  theme="warning"
-                  @click="handleEdit"
-              >
-                <template #icon><t-icon name="edit" /></template>
-                编辑信息
-              </t-button>
-              <t-button
-                  v-if="authStore.userInfo?.role === 'MANAGER'"
-                  theme="danger"
-                  variant="outline"
-                  @click="handleDelete"
-              >
-                <template #icon><t-icon name="delete" /></template>
-                删除学生
-              </t-button>
-            </t-space>
+            <div class="header-left">
+              <t-icon name="user" style="margin-right: 8px; color: #1890ff;" />
+              <h2 class="card-title">学生基本信息</h2>
+            </div>
+            <div v-if="student" class="header-right">
+              <t-tag size="large" :theme="student.gender === '男' ? 'primary' : 'warning'" shape="round">
+                {{ student.gender }}
+              </t-tag>
+            </div>
           </div>
         </template>
 
         <t-loading :loading="loading" size="large">
           <div v-if="student" class="detail-content">
-            <t-row :gutter="[32, 24]">
-              <t-col :span="8">
-                <div class="info-item">
-                  <div class="info-label">
-                    <t-icon name="id-card" style="margin-right: 8px" />
-                    学号
-                  </div>
-                  <div class="info-value">
-                    <t-tag size="large" variant="light-outline" theme="primary">
-                      {{ student.studentId }}
-                    </t-tag>
-                  </div>
+            <!-- 基本信息网格 -->
+            <div class="info-grid">
+              <div class="info-row">
+                <div class="info-label">学号</div>
+                <div class="info-value">
+                  <t-tag size="large" theme="primary" variant="light-outline">
+                    {{ student.studentId }}
+                  </t-tag>
                 </div>
-              </t-col>
+              </div>
 
-              <t-col :span="8">
-                <div class="info-item">
-                  <div class="info-label">
-                    <t-icon name="user" style="margin-right: 8px" />
-                    姓名
-                  </div>
-                  <div class="info-value">{{ student.name }}</div>
+              <div class="info-row">
+                <div class="info-label">姓名</div>
+                <div class="info-value">
+                  <span class="name-text">{{ student.name }}</span>
                 </div>
-              </t-col>
+              </div>
 
-              <t-col :span="8">
-                <div class="info-item">
-                  <div class="info-label">
-                    <t-icon name="gender" style="margin-right: 8px" />
-                    性别
-                  </div>
-                  <div class="info-value">
-                    <t-tag
-                        :theme="student.gender === '男' ? 'primary' : 'warning'"
-                        shape="round"
-                        size="large"
-                    >
-                      {{ student.gender }}
-                    </t-tag>
+              <div class="info-row">
+                <div class="info-label">联系电话</div>
+                <div class="info-value">
+                  <div class="phone-container">
+                    <t-icon name="phone" style="margin-right: 8px; color: #52c41a;" />
+                    <span>{{ student.phone }}</span>
                   </div>
                 </div>
-              </t-col>
+              </div>
 
-              <t-col :span="8">
-                <div class="info-item">
-                  <div class="info-label">
-                    <t-icon name="phone" style="margin-right: 8px" />
-                    联系电话
-                  </div>
-                  <div class="info-value">{{ student.phone }}</div>
+              <div class="info-row">
+                <div class="info-label">专业</div>
+                <div class="info-value">
+                  <t-tag size="large" theme="success" variant="light-outline">
+                    {{ student.major }}
+                  </t-tag>
                 </div>
-              </t-col>
+              </div>
 
-              <t-col :span="16">
-                <div class="info-item">
-                  <div class="info-label">
-                    <t-icon name="location" style="margin-right: 8px" />
-                    联系地址
-                  </div>
-                  <div class="info-value">{{ student.address }}</div>
+              <div class="info-row">
+                <div class="info-label">出生日期</div>
+                <div class="info-value">
+                  <t-tag size="large" variant="light">
+                    {{ student.birthday }}
+                  </t-tag>
                 </div>
-              </t-col>
+              </div>
 
-              <t-col :span="12">
-                <div class="info-item">
-                  <div class="info-label">
-                    <t-icon name="book" style="margin-right: 8px" />
-                    专业
-                  </div>
-                  <div class="info-value">
-                    <t-tag size="large" variant="light-outline" theme="success">
-                      {{ student.major }}
-                    </t-tag>
+              <div class="info-row full-width">
+                <div class="info-label">联系地址</div>
+                <div class="info-value">
+                  <div class="address-container">
+                    <t-icon name="location" style="margin-right: 8px; color: #fa8c16;" />
+                    <span class="address-text">{{ student.address }}</span>
                   </div>
                 </div>
-              </t-col>
-
-              <t-col :span="12">
-                <div class="info-item">
-                  <div class="info-label">
-                    <t-icon name="calendar" style="margin-right: 8px" />
-                    出生日期
-                  </div>
-                  <div class="info-value">
-                    <t-tag size="large" variant="light">
-                      {{ student.birthday }}
-                    </t-tag>
-                  </div>
-                </div>
-              </t-col>
-            </t-row>
+              </div>
+            </div>
           </div>
 
           <div v-else class="empty-state">
@@ -159,15 +133,13 @@
       </t-card>
 
       <!-- 课程成绩卡片 -->
-      <t-card v-if="student && student.courses && student.courses.length > 0"
-              :bordered="false"
-              class="courses-card">
+      <t-card v-if="student && student.courses && student.courses.length > 0" class="courses-card">
         <template #header>
           <div class="card-header">
-            <h2 class="card-title">
-              <t-icon name="book-open" style="margin-right: 8px" />
-              课程成绩信息
-            </h2>
+            <div class="header-left">
+              <t-icon name="book-open" style="margin-right: 8px; color: #722ed1;" />
+              <h2 class="card-title">课程成绩信息</h2>
+            </div>
             <div class="statistics">
               <t-space>
                 <t-statistic
@@ -190,103 +162,89 @@
         </template>
 
         <div class="courses-content">
-          <t-row :gutter="[16, 16]">
-            <t-col
-                v-for="(course, index) in student.courses"
-                :key="index"
-                :span="6"
-            >
-              <t-card :bordered="false" class="course-card" hover>
-                <template #header>
-                  <div class="course-header">
-                    <h3 class="course-title">{{ course.courseName }}</h3>
-                    <t-tag
-                        :theme="getScoreTheme(course.score)"
-                        shape="round"
-                        size="large"
-                    >
-                      {{ course.score.toFixed(1) }}
-                    </t-tag>
-                  </div>
-                </template>
+          <!-- 课程成绩网格 -->
+          <div class="courses-grid">
+            <div v-for="(course, index) in student.courses" :key="index" class="course-item">
+              <div class="course-header">
+                <h3 class="course-title">{{ course.courseName }}</h3>
+                <t-tag
+                    :theme="getScoreTheme(course.score)"
+                    shape="round"
+                    size="large"
+                    class="score-tag"
+                >
+                  {{ course.score.toFixed(1) }}分
+                </t-tag>
+              </div>
 
-                <div class="course-info">
-                  <t-progress
-                      :percentage="course.score"
-                      :color="getScoreColor(course.score)"
-                      :label="true"
-                      :stroke-width="8"
-                      size="large"
-                  />
-                  <div class="course-level">
-                    <t-icon
-                        :name="getScoreIcon(course.score)"
-                        :style="{ color: getScoreColor(course.score) }"
-                        size="20px"
-                    />
-                    <span class="level-text">{{ getScoreLevel(course.score) }}</span>
-                  </div>
-                </div>
-              </t-card>
-            </t-col>
-          </t-row>
+              <div class="course-progress">
+                <t-progress
+                    :percentage="course.score"
+                    :color="getScoreColor(course.score)"
+                    :label="true"
+                    :stroke-width="8"
+                    size="large"
+                />
+              </div>
+
+              <div class="course-level">
+                <t-icon
+                    :name="getScoreIcon(course.score)"
+                    :style="{ color: getScoreColor(course.score) }"
+                    size="20px"
+                />
+                <span class="level-text">{{ getScoreLevel(course.score) }}</span>
+              </div>
+            </div>
+          </div>
 
           <!-- 成绩分析 -->
           <div class="analysis-section">
             <h3 class="analysis-title">成绩分析</h3>
-            <t-row :gutter="[16, 16]">
-              <t-col :span="6">
-                <t-card :bordered="false" class="analysis-card">
-                  <div class="analysis-item">
-                    <div class="analysis-label">最高分</div>
-                    <div class="analysis-value">{{ highestScore.toFixed(1) }}分</div>
-                    <div class="analysis-desc">{{ getHighestCourse() }}</div>
-                  </div>
-                </t-card>
-              </t-col>
-              <t-col :span="6">
-                <t-card :bordered="false" class="analysis-card">
-                  <div class="analysis-item">
-                    <div class="analysis-label">最低分</div>
-                    <div class="analysis-value">{{ lowestScore.toFixed(1) }}分</div>
-                    <div class="analysis-desc">{{ getLowestCourse() }}</div>
-                  </div>
-                </t-card>
-              </t-col>
-              <t-col :span="6">
-                <t-card :bordered="false" class="analysis-card">
-                  <div class="analysis-item">
-                    <div class="analysis-label">及格率</div>
-                    <div class="analysis-value">{{ passRate.toFixed(0) }}%</div>
-                    <div class="analysis-desc">{{ passedCount }}/{{ student.courses.length }}门</div>
-                  </div>
-                </t-card>
-              </t-col>
-              <t-col :span="6">
-                <t-card :bordered="false" class="analysis-card">
-                  <div class="analysis-item">
-                    <div class="analysis-label">优秀率</div>
-                    <div class="analysis-value">{{ excellentRate.toFixed(0) }}%</div>
-                    <div class="analysis-desc">{{ excellentCount }}/{{ student.courses.length }}门</div>
-                  </div>
-                </t-card>
-              </t-col>
-            </t-row>
+            <div class="analysis-grid">
+              <t-card class="analysis-card">
+                <div class="analysis-item">
+                  <div class="analysis-label">最高分</div>
+                  <div class="analysis-value">{{ highestScore.toFixed(1) }}分</div>
+                  <div class="analysis-desc">{{ getHighestCourse() }}</div>
+                </div>
+              </t-card>
+
+              <t-card class="analysis-card">
+                <div class="analysis-item">
+                  <div class="analysis-label">最低分</div>
+                  <div class="analysis-value">{{ lowestScore.toFixed(1) }}分</div>
+                  <div class="analysis-desc">{{ getLowestCourse() }}</div>
+                </div>
+              </t-card>
+
+              <t-card class="analysis-card">
+                <div class="analysis-item">
+                  <div class="analysis-label">及格率</div>
+                  <div class="analysis-value">{{ passRate.toFixed(0) }}%</div>
+                  <div class="analysis-desc">{{ passedCount }}/{{ student.courses.length }}门</div>
+                </div>
+              </t-card>
+
+              <t-card class="analysis-card">
+                <div class="analysis-item">
+                  <div class="analysis-label">优秀率</div>
+                  <div class="analysis-value">{{ excellentRate.toFixed(0) }}%</div>
+                  <div class="analysis-desc">{{ excellentCount }}/{{ student.courses.length }}门</div>
+                </div>
+              </t-card>
+            </div>
           </div>
         </div>
       </t-card>
 
       <!-- 无课程成绩提示 -->
-      <t-card
-          v-else-if="student"
-          :bordered="false"
-          class="no-courses-card"
-      >
+      <t-card v-else-if="student" class="no-courses-card">
         <template #header>
-          <h2 class="card-title">
-            <t-icon name="book-open" style="margin-right: 8px" />
-            课程成绩信息
-          </h2>
+          <div class="card-header">
+            <t-icon name="book-open" style="margin-right: 8px; color: #722ed1;" />
+            <h2 class="card-title">课程成绩信息</h2>
+          </div>
         </template>
 
         <t-result
@@ -463,6 +421,7 @@ const handleDelete = () => {
         const res = await studentApi.deleteStudent(studentId)
         if (res.code === 200) {
           MessagePlugin.success(`学生 "${student.value!.name}" 删除成功`)
+          dialog.hide() // 确保对话框关闭
           router.push('/students')
         } else {
           MessagePlugin.error(res.message || '删除失败')
@@ -470,7 +429,6 @@ const handleDelete = () => {
       } catch (error: any) {
         MessagePlugin.error(error.message || '删除失败')
       }
-      dialog.hide()
     }
   })
 }
@@ -483,48 +441,263 @@ onMounted(() => {
 
 <style scoped>
 .student-detail {
-  padding: 24px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
-  min-height: calc(100vh - 70px);
+  padding: 20px;
+  background: #f8f9fa;
+  min-height: calc(100vh - 64px);
 }
 
-.info-card, .courses-card, .no-courses-card {
-  border-radius: 12px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
-  margin-bottom: 24px;
-  border: none;
-  transition: transform 0.3s, box-shadow 0.3s;
+.breadcrumb-container {
+  margin-bottom: 20px;
 }
 
-.info-card:hover, .courses-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+.action-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.course-card {
-  height: 100%;
-  transition: all 0.3s ease;
+.info-card,
+.courses-card,
+.no-courses-card {
   border-radius: 10px;
-  border: 1px solid var(--td-component-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+  border: 1px solid #e8e8e8;
+  background: white;
 }
 
-.course-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  border-color: var(--td-brand-color);
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.detail-content {
+  padding: 20px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.info-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 6px;
+  border: 1px solid #f0f0f0;
+}
+
+.info-row.full-width {
+  grid-column: 1 / -1;
+}
+
+.info-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+}
+
+.name-text {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1890ff;
+}
+
+.phone-container,
+.address-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.address-text {
+  line-height: 1.5;
+}
+
+.courses-content {
+  padding: 20px;
+}
+
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.course-item {
+  padding: 20px;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  background: #fafafa;
+  transition: all 0.3s ease;
+}
+
+.course-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.course-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.course-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+  margin-right: 12px;
+}
+
+.score-tag {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.course-progress {
+  margin-bottom: 12px;
+}
+
+.course-level {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.level-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+}
+
+.analysis-section {
+  margin-top: 30px;
+}
+
+.analysis-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #1890ff;
+}
+
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
 }
 
 .analysis-card {
-  text-align: center;
   padding: 20px;
+  text-align: center;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  border-radius: 10px;
   border: none;
+}
+
+.analysis-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.analysis-label {
+  font-size: 14px;
+  color: #666;
 }
 
 .analysis-value {
   font-size: 28px;
   font-weight: 700;
-  color: var(--td-brand-color);
+  color: #1890ff;
+}
+
+.analysis-desc {
+  font-size: 12px;
+  color: #999;
+}
+
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .student-detail {
+    padding: 12px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .courses-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analysis-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .action-toolbar {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .card-header {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .header-left,
+  .header-right {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .analysis-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
