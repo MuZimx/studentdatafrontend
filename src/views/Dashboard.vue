@@ -195,11 +195,24 @@ onMounted(() => {
   background: #f5f7fa;
   height: calc(100vh - 64px);
   overflow-y: auto;
+  padding: 0;
 }
 
 .content-container {
   padding: 24px;
   max-width: 1400px;
   margin: 0 auto;
+  min-height: 100%;
+}
+
+.t-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f0f0;
+  transition: box-shadow 0.3s ease;
+}
+
+.t-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 </style>

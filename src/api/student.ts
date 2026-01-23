@@ -7,18 +7,7 @@ export const studentApi = {
         return request({
             url: '/students',
             method: 'get'
-        }).then(response => {
-            // request拦截器已处理，直接返回response.data（即ApiResult）
-            return response.data
-        }).catch(error => {
-            // 如果发生错误，返回统一的错误结构
-            console.error('获取学生列表失败:', error)
-            return {
-                code: 500,
-                message: error.message || '网络请求失败',
-                data: []
-            }
-        })
+        }).then(response => response.data)
     },
 
     // 根据ID查询学生
@@ -26,16 +15,7 @@ export const studentApi = {
         return request({
             url: `/students/${studentId}`,
             method: 'get'
-        }).then(response => {
-            return response.data
-        }).catch(error => {
-            console.error('获取学生详情失败:', error)
-            return {
-                code: 500,
-                message: error.message || '网络请求失败',
-                data: null as any
-            }
-        })
+        }).then(response => response.data)
     },
 
     // 新增学生
@@ -46,13 +26,6 @@ export const studentApi = {
             data
         }).then(response => {
             return response.data
-        }).catch(error => {
-            console.error('新增学生失败:', error)
-            return {
-                code: 500,
-                message: error.message || '网络请求失败',
-                data: null as any
-            }
         })
     },
 
@@ -64,13 +37,6 @@ export const studentApi = {
             data
         }).then(response => {
             return response.data
-        }).catch(error => {
-            console.error('更新学生失败:', error)
-            return {
-                code: 500,
-                message: error.message || '网络请求失败',
-                data: null as any
-            }
         })
     },
 
@@ -81,13 +47,6 @@ export const studentApi = {
             method: 'delete'
         }).then(response => {
             return response.data
-        }).catch(error => {
-            console.error('删除学生失败:', error)
-            return {
-                code: 500,
-                message: error.message || '网络请求失败',
-                data: ''
-            }
         })
     }
 }

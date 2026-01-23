@@ -152,44 +152,50 @@ const loading = ref({
   delete: null as string | null
 })
 
-// 表格列定义
+
 const columns = [
   {
     title: '学号',
     colKey: 'studentId',
     width: 120,
+    align: 'center',
     ellipsis: true
   },
   {
     title: '姓名',
     colKey: 'name',
-    width: 100
+    width: 100,
+    align: 'center'
   },
   {
     title: '性别',
     colKey: 'gender',
-    width: 80
+    width: 80,
+    align: 'center'
   },
   {
     title: '电话',
     colKey: 'phone',
-    width: 120
+    width: 130,
+    align: 'center'
   },
   {
     title: '专业',
     colKey: 'major',
-    width: 150,
+    width: 180,
     ellipsis: true
   },
   {
     title: '课程',
     colKey: 'courses',
-    width: 120
+    width: 100,
+    align: 'center'
   },
   {
     title: '操作',
     colKey: 'operation',
-    width: 200
+    width: 180, // 减少宽度
+    align: 'center'
   }
 ]
 
@@ -218,32 +224,25 @@ const getCoursesPopupContent = (student: Student): string => {
       .join('\n')
 }
 
-// 加载学生列表
+
 const loadStudents = async () => {
   loading.value.table = true
   try {
     const res = await studentApi.getAllStudents()
 
-    // 检查响应结构
-    console.log('学生列表响应:', res)
-
     if (res.code === 200) {
-      // 确保数据是数组
-      if (Array.isArray(res.data)) {
+      if (res.data && Array.isArray(res.data)) {
         students.value = res.data
         MessagePlugin.success(`成功加载 ${res.data.length} 名学生`)
       } else {
-        console.error('响应数据不是数组:', res.data)
         students.value = []
-        MessagePlugin.error('数据格式错误')
+        MessagePlugin.warning('数据格式异常，已重置列表')
       }
     } else {
       MessagePlugin.error(res.message || '获取学生列表失败')
       students.value = []
     }
   } catch (error: any) {
-    console.error('加载学生列表失败:', error)
-    MessagePlugin.error(error.message || '网络请求失败')
     students.value = []
   } finally {
     loading.value.table = false

@@ -67,26 +67,33 @@
             </t-button>
           </div>
 
-          <div class="course-form">
-            <t-form-item :label="`课程名称 ${index + 1}`">
-              <t-input
-                  v-model="course.courseName"
-                  placeholder="请输入课程名称"
-                  :disabled="props.mode === 'view'"
-              />
-            </t-form-item>
 
-            <t-form-item :label="`成绩 ${index + 1}`">
-              <t-input-number
-                  v-model="course.score"
-                  placeholder="请输入成绩"
-                  :min="0"
-                  :max="100"
-                  :step="0.5"
-                  :decimal-places="1"
-                  :disabled="props.mode === 'view'"
-              />
-            </t-form-item>
+          <div class="course-form">
+            <t-row :gutter="16">
+              <t-col :span="16">
+                <t-form-item :label="`课程名称 ${index + 1}`" label-width="80px">
+                  <t-input
+                      v-model="course.courseName"
+                      placeholder="请输入课程名称"
+                      :disabled="props.mode === 'view'"
+                  />
+                </t-form-item>
+              </t-col>
+              <t-col :span="8">
+                <t-form-item :label="`成绩 ${index + 1}`" label-width="60px">
+                  <t-input-number
+                      v-model="course.score"
+                      placeholder="请输入成绩"
+                      :min="0"
+                      :max="100"
+                      :step="0.5"
+                      :decimal-places="1"
+                      :disabled="props.mode === 'view'"
+                      style="width: 100%"
+                  />
+                </t-form-item>
+              </t-col>
+            </t-row>
           </div>
         </div>
       </div>

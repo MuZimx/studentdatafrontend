@@ -222,6 +222,7 @@ import { computed, ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { DialogPlugin, MessagePlugin } from 'tdesign-vue-next'
 import { useAuthStore } from '@/stores/auth'
+import {studentApi} from "@/api/student.ts";
 
 // 定义接口类型
 interface CourseScore {
@@ -297,25 +298,18 @@ const fetchStudentInfo = async () => {
 
   loading.value = true
   try {
-    const response = await fetch(`/api/students/${authStore.userInfo.studentId}`, {
-      headers: {
-        'Authorization': `Bearer ${authStore.token}`,
-        'Content-Type': 'application/json',
-      },
-    })
+    const res = await studentApi.getStudentById(authStore.userInfo.studentId)
 
-    const result: ApiResponse<StudentData> = await response.json()
-
-    if (result.code === 200) {
-      studentData.value = result.data
+    if (res.code === 200) {
+      studentData.value = res.data
       MessagePlugin.success('学生信息加载成功')
     } else {
-      MessagePlugin.error(result.message || '获取学生信息失败')
+      MessagePlugin.error(res.message || '获取学生信息失败')
       studentData.value = null
     }
   } catch (error) {
     console.error('获取学生信息失败:', error)
-    MessagePlugin.error('网络错误，获取学生信息失败')
+    MessagePlugin.error('获取学生信息失败')
     studentData.value = null
   } finally {
     loading.value = false
